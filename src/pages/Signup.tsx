@@ -3,35 +3,30 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { Link } from "react-router-dom";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
-  const navigate = useNavigate();
+  const { signup, isLoading } = useAuth();
   
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Simple validation
     if (!name || !email || !password) {
-      toast.error("Please fill in all fields");
       return;
     }
     
     if (!agreeTerms) {
-      toast.error("You must agree to the terms and conditions");
       return;
     }
     
-    // In a real app, you'd call an auth service here
-    // For now, we'll just simulate a successful signup
-    toast.success("Account created successfully!");
-    navigate("/dashboard");
+    await signup(name, email, password);
   };
   
   return (
@@ -91,8 +86,8 @@ const Signup = () => {
             </a>
           </Label>
         </div>
-        <Button type="submit" className="w-full">
-          Create account
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Creating account..." : "Create account"}
         </Button>
       </form>
       <div className="mt-6 text-center text-sm">

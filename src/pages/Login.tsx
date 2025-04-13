@@ -3,29 +3,25 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Checkbox } from "@/components/ui/checkbox";
-import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const navigate = useNavigate();
+  const { login, isLoading } = useAuth();
   
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Simple validation
     if (!email || !password) {
-      toast.error("Please fill in all fields");
       return;
     }
     
-    // In a real app, you'd call an auth service here
-    // For now, we'll just simulate a successful login
-    toast.success("Logged in successfully!");
-    navigate("/dashboard");
+    await login(email, password);
   };
   
   return (
@@ -76,8 +72,8 @@ const Login = () => {
             Remember me
           </Label>
         </div>
-        <Button type="submit" className="w-full">
-          Sign in
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Signing in..." : "Sign in"}
         </Button>
       </form>
       <div className="mt-6 text-center text-sm">
@@ -85,6 +81,12 @@ const Login = () => {
         <Link to="/signup" className="text-primary hover:underline">
           Sign up
         </Link>
+      </div>
+      
+      <div className="mt-6 text-center text-xs text-muted-foreground border-t pt-4">
+        <p>For demo purposes, you can use:</p>
+        <p className="mt-1">Admin: admin@example.com / password</p>
+        <p>User: john@example.com / password</p>
       </div>
     </div>
   );
